@@ -111,7 +111,7 @@ else:
     from . import _distributor_init
 
     try:
-        from numpy.__config__ import show as show_config
+        from numpy.__config__ import show_config
     except ImportError as e:
         msg = """Error importing numpy: you should not try to import numpy from
         its source directory; please exit the numpy source tree, and relaunch
@@ -281,7 +281,6 @@ else:
          n: _msg.format(n=n, extended_msg=extended_msg)
          for n, extended_msg in _type_info
      }
-
 
     # Some of these could be defined right away, but most were aliases to
     # the Python objects and only removed in NumPy 1.24.  Defining them should

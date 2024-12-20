@@ -50,7 +50,6 @@ _NOut = TypeVar("_NOut", bound=int, covariant=True)
 _ReturnType_co = TypeVar("_ReturnType_co", covariant=True)
 _ArrayType = TypeVar("_ArrayType", bound=np.ndarray[Any, Any])
 
-
 @type_check_only
 class _SupportsArrayUFunc(Protocol):
     def __array_ufunc__(
@@ -60,7 +59,6 @@ class _SupportsArrayUFunc(Protocol):
         *inputs: Any,
         **kwargs: Any,
     ) -> Any: ...
-
 
 # NOTE: `reduce`, `accumulate`, `reduceat` and `outer` raise a ValueError for
 # ufuncs that don't accept two input arguments and return one output argument.
@@ -76,6 +74,8 @@ class _SupportsArrayUFunc(Protocol):
 class _UFunc_Nin1_Nout1(ufunc, Generic[_NameType, _NTypes, _IDType]):  # type: ignore[misc]
     @property
     def __name__(self) -> _NameType: ...
+    @property
+    def __qualname__(self) -> _NameType: ...
     @property
     def ntypes(self) -> _NTypes: ...
     @property
@@ -145,6 +145,8 @@ class _UFunc_Nin1_Nout1(ufunc, Generic[_NameType, _NTypes, _IDType]):  # type: i
 class _UFunc_Nin2_Nout1(ufunc, Generic[_NameType, _NTypes, _IDType]):  # type: ignore[misc]
     @property
     def __name__(self) -> _NameType: ...
+    @property
+    def __qualname__(self) -> _NameType: ...
     @property
     def ntypes(self) -> _NTypes: ...
     @property
@@ -258,6 +260,8 @@ class _UFunc_Nin1_Nout2(ufunc, Generic[_NameType, _NTypes, _IDType]):  # type: i
     @property
     def __name__(self) -> _NameType: ...
     @property
+    def __qualname__(self) -> _NameType: ...
+    @property
     def ntypes(self) -> _NTypes: ...
     @property
     def identity(self) -> _IDType: ...
@@ -326,6 +330,8 @@ class _UFunc_Nin2_Nout2(ufunc, Generic[_NameType, _NTypes, _IDType]):  # type: i
     @property
     def __name__(self) -> _NameType: ...
     @property
+    def __qualname__(self) -> _NameType: ...
+    @property
     def ntypes(self) -> _NTypes: ...
     @property
     def identity(self) -> _IDType: ...
@@ -380,6 +386,8 @@ class _UFunc_Nin2_Nout2(ufunc, Generic[_NameType, _NTypes, _IDType]):  # type: i
 class _GUFunc_Nin2_Nout1(ufunc, Generic[_NameType, _NTypes, _IDType, _Signature]):  # type: ignore[misc]
     @property
     def __name__(self) -> _NameType: ...
+    @property
+    def __qualname__(self) -> _NameType: ...
     @property
     def ntypes(self) -> _NTypes: ...
     @property

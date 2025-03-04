@@ -30,7 +30,7 @@ from numpy.testing import (
     assert_array_equal, assert_raises_regex, assert_array_almost_equal,
     assert_allclose, IS_PYPY, IS_WASM, IS_PYSTON, HAS_REFCOUNT,
     assert_array_less, runstring, temppath, suppress_warnings, break_cycles,
-    check_support_sve, assert_array_compare,
+    check_support_sve, assert_array_compare, IS_64BIT
     )
 from numpy.testing._private.utils import requires_memory, _no_tracing
 from numpy._core.tests._locales import CommaDecimalPointLocale
@@ -978,7 +978,7 @@ class TestCreation:
         assert_raises(ValueError, np.zeros, shape, dtype=np.int8)
         assert_raises(ValueError, np.ones, shape, dtype=np.int8)
 
-    @pytest.mark.skipif(np.dtype(np.intp).itemsize != 8,
+    @pytest.mark.skipif(not IS_64BIT,
                         reason="malloc may not fail on 32 bit systems")
     def test_malloc_fails(self):
         # This test is guaranteed to fail due to a too large allocation
@@ -1979,6 +1979,12 @@ class TestMethods:
         x = np.arange(5)
         y = np.choose([0, 0, 0], [x[:3], x[:3], x[:3]], out=x[1:4], mode='wrap')
         assert_equal(y, np.array([0, 1, 2]))
+
+        # gh_28206 check fail when out not writeable
+        x = np.arange(3)
+        out = np.zeros(3)
+        out.setflags(write=False)
+        assert_raises(ValueError, np.choose, [0, 1, 2], [x, x, x], out=out)
 
     def test_prod(self):
         ba = [1, 2, 10, 11, 6, 5, 4]
@@ -10285,6 +10291,16 @@ def test_gh_24459():
     a = np.zeros((50, 3), dtype=np.float64)
     with pytest.raises(TypeError):
         np.choose(a, [3, -1])
+
+
+def test_gh_28206():
+    a = np.arange(3)
+    b = np.ones((3, 3), dtype=np.int64)
+    out = np.array([np.nan, np.nan, np.nan])
+
+    with warnings.catch_warnings():
+        warnings.simplefilter("error", RuntimeWarning)
+        np.choose(a, b, out=out)
 
 
 @pytest.mark.parametrize("N", np.arange(2, 512))
